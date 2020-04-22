@@ -92,6 +92,10 @@ class pets:
     def open_record_new_owner(self):
         os.system ("python3 dbpet_owner.py")
 
+    def updtcblist(self):
+        list_ = self.getPortLst()
+        self.cbox['values'] = list_
+
     def get_clients_listed(self):
         # getting data
         query = 'SELECT * FROM pet_owner ORDER BY id_owner ASC'
