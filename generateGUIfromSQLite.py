@@ -40,7 +40,7 @@ def readDB(databese_name):
             columns1[nameTable]=names
             rows1[nameTable]=count[0]
             columns_and_rows_with_their_tables[nameTable]={'rows':rows1[nameTable],'columns':columns1[nameTable]}
-
+    print("43",columns_and_rows_with_their_tables)
     connection.close()
 
         #return the names of the columns, number of rows for each table within the database
