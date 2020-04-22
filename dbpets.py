@@ -40,12 +40,9 @@ class pets:
 
         Label(frame, text = 'id_owner: ').grid(row = 4, column = 0)
 
-        ## change clients
-        list_=self.get_clients_listed()
-
-        self.id_owner = ttk.Combobox(frame, values=(list_))
-        self.id_owner.set(list_[0])
+        self.id_owner= ttk.Combobox(frame,postcommand = self.updtcblist)
         self.id_owner.grid( row=4, column=1)
+        
 
         ttk.Button(frame, text = 'Record new owner', command = self.open_record_new_owner).grid(row = 4, column=2, columnspan = 2, sticky = W + E)
 
@@ -88,13 +85,16 @@ class pets:
 
     def on_focus_in(self, event):
         print("I have focus")
+        self.updtcblist()
 
     def open_record_new_owner(self):
         os.system ("python3 dbpet_owner.py")
 
     def updtcblist(self):
-        list_ = self.getPortLst()
-        self.cbox['values'] = list_
+        ## change clients
+        list_=self.get_clients_listed()
+        self.id_owner['values'] = list_
+        #self.id_owner.set(list_[0])
 
     def get_clients_listed(self):
         # getting data
