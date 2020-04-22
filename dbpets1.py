@@ -4,7 +4,7 @@ import sqlite3
 import os
 
 class pets:
-
+    
     # connection dir property
     db_name = 'database.db' 
 
@@ -23,7 +23,7 @@ class pets:
         frame.bind("<FocusIn>", self.on_focus_in)
         frame.bind("<FocusOut>", self.on_focus_out)
 
-        ## Input :)
+        ## Input
         Label(frame, text = 'pet_name: ').grid(row = 1, column = 0)
         self.pet_name = Entry(frame)
         self.pet_name.focus()
@@ -37,12 +37,12 @@ class pets:
         self.kind_of_animal = Entry(frame)
         self.kind_of_animal.grid(row = 3, column = 1)
 
-        Label(frame, text = 'id_pet_owner: ').grid(row = 4, column = 0)
-        self.id_pet_owner = ttk.Combobox(frame,postcommand = self.updtcblist)
-        self.id_pet_owner.grid(row = 4, column = 1)
-
+        Label(frame, text = 'id_owner: ').grid(row = 4, column = 0)
+        self.id_owner= ttk.Combobox(frame,postcommand = self.updtcblist)
+        self.id_owner.grid( row=4, column=1)
+        
         # Button Add
-        ttk.Button(frame, text = 'Record new pet_owner', command = self.open_record_new_pet_owner).grid(row = 4, column=2, columnspan = 2, sticky = W + E)
+        ttk.Button(frame, text = 'Record new owner', command = self.open_record_new_owner).grid(row = 4, column=2, columnspan = 2, sticky = W + E)
         ttk.Button(frame, text = 'Save pets', command = self.add_pets).grid(row = 5, columnspan = 2, sticky = W + E)
 
         # Output Messages 
@@ -54,12 +54,12 @@ class pets:
         container.grid(row = 6, column = 0, columnspan = 3)
 
         # Table
-        self.tree = ttk.Treeview(height = 10, columns = ['pet_name','breed','kind_of_animal','id_pet_owner'])
-        self.tree.heading('#0', text = 'id_pets', anchor = CENTER)
+        self.tree = ttk.Treeview(height = 10, columns = ['pet_name','breed','kind_of_animal','id_owner'])
+        self.tree.heading('#0', text = 'id_pet', anchor = CENTER)
         self.tree.heading('#1', text = 'pet_name', anchor = CENTER)
         self.tree.heading('#2', text = 'breed', anchor = CENTER)
         self.tree.heading('#3', text = 'kind_of_animal', anchor = CENTER)
-        self.tree.heading('#4', text = 'id_pet_owner', anchor = CENTER)
+        self.tree.heading('#4', text = 'id_owner', anchor = CENTER)
         
         #scroll
         vsb = ttk.Scrollbar(orient="vertical", command=self.tree.yview)
@@ -84,33 +84,33 @@ class pets:
         #print("I have focus")
         self.updtcblist()
 
-
-    def open_record_new_pet_owner(self):
+    def open_record_new_owner(self):
         os.system ("python3 dbpet_owner.py")
 
     def updtcblist(self):
         ## change clients
-        list_=self.get_pet_owners_listed()
-        self.id_pet_owner['values'] = list_
-
-    def get_pet_owners_listed(self):
+        list_=self.get_owners_listed()
+        self.id_owner['values'] = list_
+        
+    def get_owners_listed(self):
         # getting data
-        query = 'SELECT * FROM pet_owner ORDER BY id_pet_owner ASC'
+        query = 'SELECT * FROM pet_owner ORDER BY id_owner ASC'
         db_rows = self.run_query(query)
         # filling data list
         list_=[]
         for row in db_rows:
-            text_=str(row[0])+":"+str(row[1])+"  "+str(row[2])+"  "+str(row[5])
+            text_=str(row[0])+": "+str(row[1]) + " "+str(row[2]) + " "+str(row[5])
             list_.append(text_)
         return list_
 
-# Function to Execute Database Querys
+    # Function to Execute Database Querys
     def run_query(self, query, parameters = ()):
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
             result = cursor.execute(query, parameters)
             conn.commit()
         return result
+
 
     # Get pets from Database
     def get_petss(self):
@@ -119,7 +119,7 @@ class pets:
         for element in records:
             self.tree.delete(element)
         # getting data
-        query = 'SELECT * FROM pets ORDER BY id_pets DESC'
+        query = 'SELECT * FROM pets ORDER BY id_pet DESC'
         db_rows = self.run_query(query)
         # filling data
         for row in db_rows:
@@ -127,20 +127,20 @@ class pets:
 
     # User Input Validation
     def validation(self):
-        return len(self.pet_name.get()) != 0 and len(self.breed.get()) != 0 and len(self.kind_of_animal.get()) != 0 and len(self.id_pet_owner.get()) != 0
+        return len(self.pet_name.get()) != 0 and len(self.breed.get()) != 0 and len(self.kind_of_animal.get()) != 0 and len(self.id_owner.get()) != 0
 
     def add_pets(self):
         if self.validation():
             query = 'INSERT INTO pets VALUES(NULL, ?, ?, ?, ?)'
-            parameters =  (self.pet_name.get(), self.breed.get(), self.kind_of_animal.get(), (self.id_pet_owner.get().split(':'))[0])
+            parameters =  (self.pet_name.get(), self.breed.get(), self.kind_of_animal.get(), (self.id_owner.get().split(':'))[0])
             self.run_query(query, parameters)
             self.message['text'] = 'pets {} added Successfully'.format(self.pet_name.get())
             self.pet_name.delete(0, END)
             self.breed.delete(0, END)
             self.kind_of_animal.delete(0, END)
-            self.id_pet_owner.delete(0, END)
+            self.id_owner.delete(0, END)
         else:
-            self.message['text'] = 'pet_name and breed and kind_of_animal and id_pet_owner is Required'
+            self.message['text'] = 'pet_name and breed and kind_of_animal and id_owner is Required'
         self.get_petss()
 
     def delete_pets(self):
@@ -153,7 +153,7 @@ class pets:
         self.message['text'] = ''
         ##
         name = self.tree.item(self.tree.selection())['text']
-        query = 'DELETE FROM pets WHERE id_pets = ?'
+        query = 'DELETE FROM pets WHERE id_pet = ?'
         self.run_query(query, (name, ))
         self.message['text'] = 'Record {} deleted Successfully'.format(name)
         self.get_petss()
@@ -168,7 +168,7 @@ class pets:
         old_pet_name = self.tree.item(self.tree.selection())['values'][0]
         old_breed = self.tree.item(self.tree.selection())['values'][1]
         old_kind_of_animal = self.tree.item(self.tree.selection())['values'][2]
-        old_id_pet_owner = self.tree.item(self.tree.selection())['values'][3]
+        old_id_owner = self.tree.item(self.tree.selection())['values'][3]
         self.edit_wind = Toplevel()
         self.edit_wind.title = 'Edit pets'
         # Old pet_name
@@ -192,20 +192,20 @@ class pets:
         Label(self.edit_wind, text = 'New kind_of_animal:').grid(row = 5, column = 1)
         new_kind_of_animal = Entry(self.edit_wind)
         new_kind_of_animal.grid(row = 5, column = 2)
-        # Old id_pet_owner
-        Label(self.edit_wind, text = 'Old id_pet_owner:').grid(row = 6, column = 1)
-        Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = old_id_pet_owner), state = 'readonly').grid(row = 6, column = 2)
-        # New id_pet_owner
-        Label(self.edit_wind, text = 'New id_pet_owner:').grid(row = 7, column = 1)
-        new_id_pet_owner = Entry(self.edit_wind)
-        new_id_pet_owner.grid(row = 7, column = 2)
+        # Old id_owner
+        Label(self.edit_wind, text = 'Old id_owner:').grid(row = 6, column = 1)
+        Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = old_id_owner), state = 'readonly').grid(row = 6, column = 2)
+        # New id_owner
+        Label(self.edit_wind, text = 'New id_owner:').grid(row = 7, column = 1)
+        new_id_owner = Entry(self.edit_wind)
+        new_id_owner.grid(row = 7, column = 2)
         
-        Button(self.edit_wind, text = 'Update', command = lambda: self.edit_records(new_pet_name.get(), old_pet_name, new_breed.get(), old_breed, new_kind_of_animal.get(), old_kind_of_animal, new_id_pet_owner.get(), old_id_pet_owner)).grid(row = 8, column = 2, sticky = W)
+        Button(self.edit_wind, text = 'Update', command = lambda: self.edit_records(new_pet_name.get(), old_pet_name, new_breed.get(), old_breed, new_kind_of_animal.get(), old_kind_of_animal, new_id_owner.get(), old_id_owner)).grid(row = 8, column = 2, sticky = W)
         self.edit_wind.mainloop()
 
-    def edit_records(self, new_pet_name, old_pet_name, new_breed, old_breed, new_kind_of_animal, old_kind_of_animal, new_id_pet_owner, old_id_pet_owner):
-        query = 'UPDATE pets SET pet_name = ?, breed = ?, kind_of_animal = ?, id_pet_owner = ? WHERE pet_name = ? AND breed = ? AND kind_of_animal = ? AND id_pet_owner = ?'
-        parameters = (new_pet_name, new_breed, new_kind_of_animal, new_id_pet_owner, old_pet_name, old_breed, old_kind_of_animal, old_id_pet_owner)
+    def edit_records(self, new_pet_name, old_pet_name, new_breed, old_breed, new_kind_of_animal, old_kind_of_animal, new_id_owner, old_id_owner):
+        query = 'UPDATE pets SET pet_name = ?, breed = ?, kind_of_animal = ?, id_owner = ? WHERE pet_name = ? AND breed = ? AND kind_of_animal = ? AND id_owner = ?'
+        parameters = (new_pet_name, new_breed, new_kind_of_animal, new_id_owner, old_pet_name, old_breed, old_kind_of_animal, old_id_owner)
         self.run_query(query, parameters)
         self.edit_wind.destroy()
         self.message['text'] = 'Record {} updated successfylly'.format(old_pet_name)

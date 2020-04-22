@@ -1,6 +1,7 @@
 from tkinter import ttk
 from tkinter import *
 import sqlite3
+import os
 
 class pet_owner:
 
@@ -16,9 +17,13 @@ class pet_owner:
         # Creating a Frame Container
         ##'.format(thetables)
         frame = LabelFrame(self.wind, text = 'Register new pet_owner')
-        frame.grid(row = 0, column = 0, columnspan = 3, pady = 20)
+        frame.grid(row = 0, column = 0, columnspan = 3, pady = 20, sticky = 'ew')
 
-        ## Input
+        #focus
+        frame.bind("<FocusIn>", self.on_focus_in)
+        frame.bind("<FocusOut>", self.on_focus_out)
+
+        ## Input :)
         Label(frame, text = 'Name: ').grid(row = 1, column = 0)
         self.Name = Entry(frame)
         self.Name.focus()
@@ -53,7 +58,7 @@ class pet_owner:
 
         # Table
         self.tree = ttk.Treeview(height = 10, columns = ['Name','Lasta','address','phone','email'])
-        self.tree.heading('#0', text = 'id_owner', anchor = CENTER)
+        self.tree.heading('#0', text = 'id_pet_owner', anchor = CENTER)
         self.tree.heading('#1', text = 'Name', anchor = CENTER)
         self.tree.heading('#2', text = 'Lasta', anchor = CENTER)
         self.tree.heading('#3', text = 'address', anchor = CENTER)
@@ -75,7 +80,15 @@ class pet_owner:
         # Filling the Rows
         self.get_pet_owners()
 
-    # Function to Execute Database Querys
+    def on_focus_out(self, event):
+        #print("I DON'T have focus")
+        pass
+
+    def on_focus_in(self, event):
+        #print("I have focus")
+        pass
+
+# Function to Execute Database Querys
     def run_query(self, query, parameters = ()):
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
@@ -90,7 +103,7 @@ class pet_owner:
         for element in records:
             self.tree.delete(element)
         # getting data
-        query = 'SELECT * FROM pet_owner ORDER BY id_owner DESC'
+        query = 'SELECT * FROM pet_owner ORDER BY id_pet_owner DESC'
         db_rows = self.run_query(query)
         # filling data
         for row in db_rows:
@@ -125,7 +138,7 @@ class pet_owner:
         self.message['text'] = ''
         ##
         name = self.tree.item(self.tree.selection())['text']
-        query = 'DELETE FROM pet_owner WHERE id_owner = ?'
+        query = 'DELETE FROM pet_owner WHERE id_pet_owner = ?'
         self.run_query(query, (name, ))
         self.message['text'] = 'Record {} deleted Successfully'.format(name)
         self.get_pet_owners()

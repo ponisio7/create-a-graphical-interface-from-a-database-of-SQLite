@@ -52,55 +52,46 @@ def readDB(databese_name):
 information_from_the_database = readDB(db_name)
 for x in information_from_the_database:
     table_names.append(x)
-            #print(str(len(table_names)))
-
+            
+print("56", information_from_the_database)
 
 
 class Product:
+    contain_two_ids=False
     for thetables in table_names:
         global stringpy
         stringpy=""
         count_=0
-        print("64",(column_list))
+        #print("65",(column_list))
 
-        #while(len(column_list)>0):
-        try:
-            for val in column_list:
-                column_list.remove(val)
-                print("remove1",val)
-        except expression as identifier:
-            for val in column_list:
-                column_list.remove(val)
-                print("remove2",val)
-        try:
-            for val in column_list:
-                column_list.remove(val)
-                print("remove1",val)
-        except expression as identifier:
-            for val in column_list:
-                column_list.remove(val)
-                print("remove3",val)
-        try:
-            for val in column_list:
-                column_list.remove(val)
-                print("remove1",val)
-        except expression as identifier:
-            for val in column_list:
-                column_list.remove(val)
-                print("remove4",val)
-
+        while(len(column_list)>0):
+            try:
+                for val in column_list:
+                    column_list.remove(val)
+            except expression as identifier:
+                pass
+        count_ids=0
         for a in (information_from_the_database.get(thetables).get('columns')):
             column_list.append(a)
+            if (re.match('id_', a, re.IGNORECASE)!=None):
+                count_ids+=1
+        if(count_ids>0):
+            contain_two_ids=True
         
-        stringpy+= "from tkinter import ttk\nfrom tkinter import *\nimport sqlite3\n"
+        
+        stringpy+= "from tkinter import ttk\nfrom tkinter import *\nimport sqlite3\nimport os\n"
         stringpy+="\nclass "+thetables+":\n\n    # connection dir property\n    db_name = \'"+ '{}'.format(db_name)+"\' \n\n"
         stringpy+="    def __init__(self, window):\n        # Initializations\n        self.wind = window\n        "
         stringpy+="##'.format(thetables)\n        self.wind.title(\'" + '{}'.format(thetables)+"\') \n\n        "
         stringpy+="# Creating a Frame Container\n        ##'.format(thetables)\n        "
         stringpy+="frame = LabelFrame(self.wind, text = \'Register new "+ '{}'.format(thetables)+"\')\n        "
-        stringpy+="frame.grid(row = 0, column = 0, columnspan = 3, pady = 20)\n\n        ## Input\n        "
+        stringpy+="frame.grid(row = 0, column = 0, columnspan = 3, pady = 20, sticky = 'ew')"
+        stringpy+="\n\n        #focus\n        frame.bind(\"<FocusIn>\", self.on_focus_in)"
+        stringpy+="\n        frame.bind(\"<FocusOut>\", self.on_focus_out)"
+        stringpy+="\n\n        ## Input :)\n        "
         count_row =0
         count_=0
+        name_id=""
         for x in column_list:
             if (count_!=0):
                 count_column=0
@@ -108,14 +99,24 @@ class Product:
                     #Label(frame, text = 'Name: ').grid(row = 1, column = 0)
                 stringpy+="Label(frame, text = \'"+'{}'.format(x)+ ": \').grid(row = "+ '{}'.format(str(count_row)) + ", column = " + '{}'.format(str(count_column)) +")\n        "
                     #self.name = Entry(frame)
-                stringpy+="self."+'{}'.format(x)+" = Entry(frame)\n        "
+                if (re.match('id_', x, re.IGNORECASE)!=None):
+                    stringpy+="self."+'{}'.format(x)+" = ttk.Combobox(frame,postcommand = self.updtcblist)\n        "
+                    name_id = x
+                else:
+                    stringpy+="self."+'{}'.format(x)+" = Entry(frame)\n        "
                 if(count_row == 1):
                     stringpy+="self."+'{}'.format(x)+".focus()\n        "
                 count_column = count_column+1
                 stringpy+="self."+'{}'.format(x)+".grid(row = "+ '{}'.format(str(count_row)) + ", column = " + '{}'.format(str(count_column)) +")\n\n        "
             count_+=1   
         count_row=count_row+1
-        stringpy+="# Button Add\n        ttk.Button(frame, text = 'Save "+ '{}'.format(thetables)+"\'"
+        stringpy+="# Button Add"
+        if (re.match('id_', a, re.IGNORECASE)!=None):
+            stringpy+="\n        ttk.Button(frame, text = 'Record new "+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+"\'"   
+            stringpy+=", command = self.open_record_new_"+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+").grid(row = "
+            print("117",name_id)
+            stringpy+=""+ '{}'.format(str(count_row-1)) + ", column=2, columnspan = 2, sticky = W + E)"
+        stringpy+="\n        ttk.Button(frame, text = 'Save "+ '{}'.format(thetables)+"\'"   
         stringpy+=", command = self.add_"+ '{}'.format(thetables)+").grid(row = " + '{}'.format(str(count_row)) + ", columnspan = 2, sticky = W + E)"
         stringpy+="\n\n        # Output Messages \n        self.message = Label(text = '', fg = 'red')\n        "
         stringpy+="self.message.grid(row = " +'{}'.format(str(count_row)) +", column = 0, columnspan = 2, sticky = W + E)\n\n        # Creating a Frame Container\n        "
@@ -143,7 +144,38 @@ class Product:
         count_row=count_row+1
         stringpy+="ttk.Button(text = 'DELETE', command = self.delete_"+ '{}'.format(thetables)+").grid(row = "+'{}'.format(str(count_row))+", column = 0, sticky = W+E, columnspan = 1)"
         stringpy+="\n        ttk.Button(text = 'EDIT', command = self.edit_"+ '{}'.format(thetables)+").grid(row = "+'{}'.format(str(count_row))+", column = 1, sticky = W+E,  columnspan = 2)"
-        stringpy+="\n\n        # Filling the Rows\n        self.get_"+ '{}'.format(thetables)+"s()\n\n    "
+        stringpy+="\n\n        # Filling the Rows\n        self.get_"+ '{}'.format(thetables)+"s()\n\n"
+        stringpy+="    def on_focus_out(self, event):\n        #print(\"I DON\'T have focus\")\n        pass\n\n"
+        stringpy+="    def on_focus_in(self, event):\n        #print(\"I have focus\")"
+        if (re.match('id_', a, re.IGNORECASE)!=None):
+            stringpy+="\n        self.updtcblist()\n\n"
+            stringpy+="\n    def open_record_new_"+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+"(self):"
+            stringpy+="\n        os.system (\"python3 "
+            stringpy+="db"+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+".py\")\n"
+            stringpy+="\n    def updtcblist(self):\n        ## change clients\n        "
+            stringpy+="list_=self.get_"+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+"s_listed()"
+            stringpy+="\n        self."+name_id+"[\'values\'] = list_"
+            stringpy+="\n\n"
+            stringpy+="    def get_"+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+"s_listed(self):"
+            stringpy+="\n        # getting data\n        query = \'SELECT * FROM "
+            stringpy+=""+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+ " ORDER BY "+name_id + " ASC\'"
+            stringpy+="\n        db_rows = self.run_query(query)\n        # filling data list\n        list_=[]"
+            stringpy+="\n        for row in db_rows:\n            text_="
+            count_=0
+            for number_ in range(len(column_list)):
+                if (count_==0):
+                    stringpy+="str(row["+str(number_)+"])+\":\"+"
+                else:
+                    if(count_== len(column_list)-1):
+                        stringpy+= "str(row["+str(number_+1)+"])"
+                    else:
+                        if (count_==1 or count_==2):
+                            stringpy+="str(row["+str(number_)+"])+\"  \"+"
+                count_+=1
+            stringpy+="\n            list_.append(text_)\n        return list_"
+            stringpy+="\n\n"
+        else:
+            stringpy+="\n        pass\n\n"
         stringpy+="# Function to Execute Database Querys\n    def run_query(self, query, parameters = ()):\n        with sqlite3.connect(self.db_name) as conn:"
         stringpy+="\n            cursor = conn.cursor()\n            result = cursor.execute(query, parameters)\n            conn.commit()"
         stringpy+="\n        return result\n\n    # Get "+ '{}'.format(thetables)+" from Database\n    def get_"+ '{}'.format(thetables)+"s(self):"
@@ -179,8 +211,12 @@ class Product:
             if (count_!=0 and count_<len(column_list)-1):
                 stringpy+="self."+name_+".get(), "
             else:
-                if(count_== len(column_list)-1):
-                    stringpy+="self."+name_+".get())\n            self.run_query(query, parameters)\n            self.message[\'text\'] = \'"
+                if (re.match('id_', a, re.IGNORECASE)!=None):
+                    if(count_== len(column_list)-1):
+                        stringpy+="(self."+name_+".get().split(':'))[0])\n            self.run_query(query, parameters)\n            self.message[\'text\'] = \'"
+                else:
+                    if(count_== len(column_list)-1):
+                        stringpy+="self."+name_+".get())\n            self.run_query(query, parameters)\n            self.message[\'text\'] = \'"
             count_+=1
         stringpy+='{}'.format(thetables)+" {} added Successfully'.format(self."+ '{}'.format(column_list[1])+".get())\n            "
         count_=0
@@ -282,8 +318,11 @@ class Product:
         stringpy+="self.message[\'text\'] = \'Record {} updated successfylly\'.format(old_"+'{}'.format(column_list[1])+")\n        self.get_"+ '{}'.format(thetables)+"s()"
         stringpy+="\n\nif __name__ == '__main__':\n    window = Tk()\n    application = "+thetables+"(window)\n    window.mainloop()"
             #print(stringpy)
-
-        file = open(saveIn+thetables+".py", 'w')
+        if (re.match('id_', a, re.IGNORECASE)!=None):
+            saveTo = saveIn+"main"
+        else:
+            saveTo = saveIn+thetables
+        file = open(saveTo+".py", 'w')
         file.write(stringpy)
         print("stringpy")
         file.close()
