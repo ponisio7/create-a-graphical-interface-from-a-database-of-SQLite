@@ -63,7 +63,7 @@ class Product:
         count_=0
         print("64",(column_list))
 
-        
+        #while(len(column_list)>0):
         try:
             for val in column_list:
                 column_list.remove(val)
@@ -79,7 +79,7 @@ class Product:
         except expression as identifier:
             for val in column_list:
                 column_list.remove(val)
-                print("remove2",val)
+                print("remove3",val)
         try:
             for val in column_list:
                 column_list.remove(val)
@@ -87,7 +87,7 @@ class Product:
         except expression as identifier:
             for val in column_list:
                 column_list.remove(val)
-                print("remove2",val)
+                print("remove4",val)
 
         for a in (information_from_the_database.get(thetables).get('columns')):
             column_list.append(a)

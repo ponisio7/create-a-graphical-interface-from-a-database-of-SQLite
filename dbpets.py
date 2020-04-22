@@ -1,9 +1,10 @@
 from tkinter import ttk
 from tkinter import *
 import sqlite3
+import os
 
 class pets:
-
+    
     # connection dir property
     db_name = 'database.db' 
 
@@ -17,6 +18,11 @@ class pets:
         ##'.format(thetables)
         frame = LabelFrame(self.wind, text = 'Register new pets')
         frame.grid(row = 0, column = 0, columnspan = 3, pady = 20)
+
+        frame.bind("<FocusIn>", self.on_focus_in)
+        frame.bind("<FocusOut>", self.on_focus_out)
+
+
 
         ## Input
         Label(frame, text = 'pet_name: ').grid(row = 1, column = 0)
@@ -34,11 +40,14 @@ class pets:
 
         Label(frame, text = 'id_owner: ').grid(row = 4, column = 0)
 
-        cb = ttk.Combobox(frame, values=("1", "2", "3", "4", "5"))
-        cb.set("1")
-        cb.grid( row=4, column=1)
+        ## change clients
+        list_=self.get_clients_listed()
 
-        ttk.Button(frame, text = 'Record new owner').grid(row = 4, column=2, columnspan = 2, sticky = W + E)
+        self.id_owner = ttk.Combobox(frame, values=(list_))
+        self.id_owner.set(list_[0])
+        self.id_owner.grid( row=4, column=1)
+
+        ttk.Button(frame, text = 'Record new owner', command = self.open_record_new_owner).grid(row = 4, column=2, columnspan = 2, sticky = W + E)
 
         # Button Add
         ttk.Button(frame, text = 'Save pets', command = self.add_pets).grid(row = 5, columnspan = 2, sticky = W + E)
@@ -74,6 +83,26 @@ class pets:
         # Filling the Rows
         self.get_petss()
 
+    def on_focus_out(self, event):
+        print("I DON'T have focus")
+
+    def on_focus_in(self, event):
+        print("I have focus")
+
+    def open_record_new_owner(self):
+        os.system ("python3 dbpet_owner.py")
+
+    def get_clients_listed(self):
+        # getting data
+        query = 'SELECT * FROM pet_owner ORDER BY id_owner ASC'
+        db_rows = self.run_query(query)
+        # filling data list
+        list_=[]
+        for row in db_rows:
+            text_=str(row[0])+": "+str(row[1]) + " "+str(row[2])
+            list_.append(text_)
+        return list_
+
     # Function to Execute Database Querys
     def run_query(self, query, parameters = ()):
         with sqlite3.connect(self.db_name) as conn:
@@ -102,7 +131,7 @@ class pets:
     def add_pets(self):
         if self.validation():
             query = 'INSERT INTO pets VALUES(NULL, ?, ?, ?, ?)'
-            parameters =  (self.pet_name.get(), self.breed.get(), self.kind_of_animal.get(), self.id_owner.get())
+            parameters =  (self.pet_name.get(), self.breed.get(), self.kind_of_animal.get(), (self.id_owner.get().split(':'))[0])
             self.run_query(query, parameters)
             self.message['text'] = 'pets {} added Successfully'.format(self.pet_name.get())
             self.pet_name.delete(0, END)
