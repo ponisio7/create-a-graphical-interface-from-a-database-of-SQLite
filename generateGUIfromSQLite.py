@@ -5,7 +5,7 @@ import sqlite3
 import re
 
 
-saveIn = "database.py"
+saveIn = "database.py" #yet no
 db_name = "database.db"
 stringpy=""    
 table_names= []
