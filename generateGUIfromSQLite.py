@@ -6,7 +6,7 @@ import re
 
 
 saveIn = "db" #yet no
-db_name = "database.db"
+db_name = "Store.sqlite3"
 stringpy=""    
 table_names= []
 column_list = [] 
