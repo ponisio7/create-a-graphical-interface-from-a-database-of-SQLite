@@ -4,13 +4,14 @@ from tkinter import *
 import sqlite3
 import re
 
-
+#Store.sqlite3
 saveIn = "db" #yet no
-db_name = "Store.sqlite3"
+db_name = "database.db"
 stringpy=""    
 table_names= []
 column_list = [] 
-information_from_the_database = {}    
+information_from_the_database = {} 
+direc=""   
 
 def readDB(databese_name):
     #database name
@@ -53,7 +54,7 @@ information_from_the_database = readDB(db_name)
 for x in information_from_the_database:
     table_names.append(x)
             
-print("56", information_from_the_database)
+print("57", information_from_the_database)
 
 
 class Product:
@@ -114,11 +115,11 @@ class Product:
         if (re.match('id_', a, re.IGNORECASE)!=None):
             stringpy+="\n        ttk.Button(frame, text = 'Record new "+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+"\'"   
             stringpy+=", command = self.open_record_new_"+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+").grid(row = "
-            print("117",name_id)
+            print("118",name_id)
             stringpy+=""+ '{}'.format(str(count_row-1)) + ", column=3)"
             stringpy+="\n        # find-148857_640.png\n        buttonImage = Image.open(\'find-148857_640.png\')\n        buttonImage = buttonImage.resize((15, 15), Image.ANTIALIAS)"
             stringpy+="\n        buttonPhoto = ImageTk.PhotoImage(buttonImage)"
-            stringpy+="\n        self.btn_"+name_id+" = ttk.Button(frame, image=buttonPhoto , command = self.find_records_in_stock)"
+            stringpy+="\n        self.btn_"+name_id+" = ttk.Button(frame, image=buttonPhoto , command = self.find_records_in_"+direc+")"
             stringpy+="\n        self.btn_"+name_id+".grid(column= 2, row= "+str(count_row-1)+")"
             stringpy+="\n        # assign image to other object\n        self.btn_"
             stringpy+=name_id+".image = buttonPhoto"
@@ -152,12 +153,23 @@ class Product:
         stringpy+="\n        ttk.Button(text = 'EDIT', command = self.edit_"+ '{}'.format(thetables)+").grid(row = "+'{}'.format(str(count_row))+", column = 1, sticky = W+E,  columnspan = 2)"
         stringpy+="\n\n        # Filling the Rows\n        self.get_"+ '{}'.format(thetables)+"s()\n\n"
         if (re.match('id_', a, re.IGNORECASE)!=None):
-            stringpy+="    def find_records_in_"+name_id.split('_')[1]+"(self):\n        self.message[\'text\'] = \'\'\n        "
+            stringpy+="    def find_records_in_"+direc+"(self):\n        self.message[\'text\'] = \'\'\n        "
             stringpy+="self.edit_wind = Toplevel()\n        self.edit_wind.title = \"Find records in stock\"\n        "
             stringpy+="#\n        Label(self.edit_wind, text=\"type the word you want to search in one or more boxes\", justify = LEFT).grid(row = "
             stringpy+="1 , column = 0)\n\n"
             connection = sqlite3.connect(db_name)
-            cursor = connection.execute('SELECT * FROM '+name_id.split('_')[1])
+            list_direc= name_id.split('_')
+            count_=0
+            for each in list_direc:
+                if(count_>0 and count_<len(list_direc)-1):
+                    direc+=each +"_"
+                else:
+                    if(count_>0):
+                        direc+=each
+                count_+=1
+            count_=0
+            print("171",direc) #name_id.split('_')[1]
+            cursor = connection.execute('SELECT * FROM '+direc)
             names = [description[0] for description in cursor.description]
             count_=1
             for each in names:
@@ -221,7 +233,7 @@ class Product:
 
                 count_+=1
 
-            stringpy+= "\n        stringt=\"SELECT * FROM "+name_id.split('_')[1]+" WHERE \""
+            stringpy+= "\n        stringt=\"SELECT * FROM "+direc+" WHERE \""
             stringpy+= "\n        #print(\"114\",str(len(stringt)))\n        count_=0\n        sum_=0"
             stringpy+= "\n        for t in range(len(search)):\n            var=str(search[t])"
             stringpy+= "\n            if (len(var)>0):\n                sum_+=1\n                "
@@ -235,9 +247,9 @@ class Product:
             stringpy+= "\n                    break\n            count_+=1\n        "
             stringpy+= "list_text = stringt.split(' ')\n        if (len(str(list_text[-1]))==0):"
             stringpy+= "\n            if(len(stringt)=="
-            query2 = 'SELECT * FROM '+name_id.split('_')[1]+ " WHERE "
+            query2 = 'SELECT * FROM '+direc+ " WHERE "
             stringpy+= str(len(query2))
-            stringpy+= "):\n                stringt=\'SELECT * FROM "+name_id.split('_')[1]+"\'"
+            stringpy+= "):\n                stringt=\'SELECT * FROM "+direc+"\'"
             stringpy+= "\n            else:\n                stringt=stringt[:-len(\' AND\')]"
             stringpy+= "\n\n        # getting data\n        query = stringt.replace(\"\\\"\",\"\")"
             stringpy+= "\n        db_rows = self.run_query(query)\n        # filling data list"
