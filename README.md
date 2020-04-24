@@ -9,3 +9,5 @@ IDs must be placed in the underscore with the full table name
 Example table owner_pet the ID would be id_owner_pet
 see video in youtube
 https://www.youtube.com/watch?v=453BngFmJdo&feature=youtu.be
+
+use generateGUIfromSQLite.py and dataset .db and .sqlite3
