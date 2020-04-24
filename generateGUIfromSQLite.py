@@ -4,9 +4,9 @@ from tkinter import *
 import sqlite3
 import re
 
-#Store.sqlite3
+#Store.sqlite3 #buy.db #database.db
 saveIn = "db" #yet no
-db_name = "database.db"
+db_name = "Store.sqlite3"
 stringpy=""    
 table_names= []
 column_list = [] 
@@ -282,15 +282,19 @@ class Product:
             stringpy+="\n        db_rows = self.run_query(query)\n        # filling data list\n        list_=[]"
             stringpy+="\n        for row in db_rows:\n            text_="
             count_=0
-            for number_ in range(len(column_list)):
+            print("285",str(len(column_list)),column_list)
+            query1 = 'SELECT * FROM '+direc
+            connection = sqlite3.connect(db_name)
+            cursor = connection.execute(query1)
+            names1 = [description[0] for description in cursor.description]
+            for number_ in range(len(names1)):
                 if (count_==0):
-                    stringpy+="str(row["+str(number_)+"])+\":\"+"
+                    stringpy+="str(row["+str(number_)+"])+\": \"+"
                 else:
-                    if(count_== len(column_list)-1):
-                        stringpy+= "str(row["+str(number_+1)+"])"
+                    if(count_<len(names1)-1):
+                        stringpy+="str(row["+str(number_)+"])+\"  \"+"
                     else:
-                        if (count_==1 or count_==2):
-                            stringpy+="str(row["+str(number_)+"])+\"  \"+"
+                        stringpy+="str(row["+str(number_)+"])"
                 count_+=1
             stringpy+="\n            list_.append(text_)\n        return list_"
             stringpy+="\n\n"

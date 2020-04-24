@@ -4,20 +4,20 @@ import sqlite3
 import os
 from PIL import Image, ImageTk
 
-class pets:
+class car:
 
     # connection dir property
-    db_name = 'database.db' 
+    db_name = 'Store.sqlite3' 
 
     def __init__(self, window):
         # Initializations
         self.wind = window
         ##'.format(thetables)
-        self.wind.title('pets') 
+        self.wind.title('car') 
 
         # Creating a Frame Container
         ##'.format(thetables)
-        frame = LabelFrame(self.wind, text = 'Register new pets')
+        frame = LabelFrame(self.wind, text = 'Register new car')
         frame.grid(row = 0, column = 0, columnspan = 4, pady = 10, sticky = 'ew')
 
         #focus
@@ -25,50 +25,40 @@ class pets:
         frame.bind("<FocusOut>", self.on_focus_out)
 
         ## Input :)
-        Label(frame, text = 'pet_name: ').grid(row = 1, column = 0)
-        self.pet_name = Entry(frame)
-        self.pet_name.focus()
-        self.pet_name.grid(row = 1, column = 1)
+        Label(frame, text = 'Name_client: ').grid(row = 1, column = 0)
+        self.Name_client = Entry(frame)
+        self.Name_client.focus()
+        self.Name_client.grid(row = 1, column = 1)
 
-        Label(frame, text = 'breed: ').grid(row = 2, column = 0)
-        self.breed = Entry(frame)
-        self.breed.grid(row = 2, column = 1)
-
-        Label(frame, text = 'kind_of_animal: ').grid(row = 3, column = 0)
-        self.kind_of_animal = Entry(frame)
-        self.kind_of_animal.grid(row = 3, column = 1)
-
-        Label(frame, text = 'id_pet_owner: ').grid(row = 4, column = 0)
-        self.id_pet_owner = ttk.Combobox(frame,postcommand = self.updtcblist)
-        self.id_pet_owner.grid(row = 4, column = 1)
+        Label(frame, text = 'id_stock: ').grid(row = 2, column = 0)
+        self.id_stock = ttk.Combobox(frame,postcommand = self.updtcblist)
+        self.id_stock.grid(row = 2, column = 1)
 
         # Button Add
-        ttk.Button(frame, text = 'Record new pet_owner', command = self.open_record_new_pet_owner).grid(row = 4, column=3)
+        ttk.Button(frame, text = 'Record new stock', command = self.open_record_new_stock).grid(row = 2, column=3)
         # find-148857_640.png
         buttonImage = Image.open('find-148857_640.png')
         buttonImage = buttonImage.resize((15, 15), Image.ANTIALIAS)
         buttonPhoto = ImageTk.PhotoImage(buttonImage)
-        self.btn_id_pet_owner = ttk.Button(frame, image=buttonPhoto , command = self.find_records_in_)
-        self.btn_id_pet_owner.grid(column= 2, row= 4)
+        self.btn_id_stock = ttk.Button(frame, image=buttonPhoto , command = self.find_records_in_)
+        self.btn_id_stock.grid(column= 2, row= 2)
         # assign image to other object
-        self.btn_id_pet_owner.image = buttonPhoto
-        ttk.Button(frame, text = 'Save pets', command = self.add_pets).grid(row = 5, columnspan = 2, sticky = W + E)
+        self.btn_id_stock.image = buttonPhoto
+        ttk.Button(frame, text = 'Save car', command = self.add_car).grid(row = 3, columnspan = 2, sticky = W + E)
 
         # Output Messages 
         self.message = Label(text = '', fg = 'red')
-        self.message.grid(row = 5, column = 0, columnspan = 2, sticky = W + E)
+        self.message.grid(row = 3, column = 0, columnspan = 2, sticky = W + E)
 
         # Creating a Frame Container
-        container = LabelFrame(self.wind, text = 'Table of pets')
-        container.grid(row = 6, column = 0, columnspan = 3)
+        container = LabelFrame(self.wind, text = 'Table of car')
+        container.grid(row = 4, column = 0, columnspan = 3)
 
         # Table
-        self.tree = ttk.Treeview(height = 10, columns = ['pet_name','breed','kind_of_animal','id_pet_owner'])
-        self.tree.heading('#0', text = 'id_pets', anchor = CENTER)
-        self.tree.heading('#1', text = 'pet_name', anchor = CENTER)
-        self.tree.heading('#2', text = 'breed', anchor = CENTER)
-        self.tree.heading('#3', text = 'kind_of_animal', anchor = CENTER)
-        self.tree.heading('#4', text = 'id_pet_owner', anchor = CENTER)
+        self.tree = ttk.Treeview(height = 10, columns = ['Name_client','id_stock'])
+        self.tree.heading('#0', text = 'id_car', anchor = CENTER)
+        self.tree.heading('#1', text = 'Name_client', anchor = CENTER)
+        self.tree.heading('#2', text = 'id_stock', anchor = CENTER)
         
         #scroll
         vsb = ttk.Scrollbar(orient="vertical", command=self.tree.yview)
@@ -79,11 +69,11 @@ class pets:
         hsb.grid(column=0, row=1, sticky='ew', in_=container)
 
         # Buttons
-        ttk.Button(text = 'DELETE', command = self.delete_pets).grid(row = 7, column = 0, sticky = W+E, columnspan = 1)
-        ttk.Button(text = 'EDIT', command = self.edit_pets).grid(row = 7, column = 1, sticky = W+E,  columnspan = 2)
+        ttk.Button(text = 'DELETE', command = self.delete_car).grid(row = 5, column = 0, sticky = W+E, columnspan = 1)
+        ttk.Button(text = 'EDIT', command = self.edit_car).grid(row = 5, column = 1, sticky = W+E,  columnspan = 2)
 
         # Filling the Rows
-        self.get_petss()
+        self.get_cars()
 
     def find_records_in_(self):
         self.message['text'] = ''
@@ -93,36 +83,32 @@ class pets:
         Label(self.edit_wind, text="type the word you want to search in one or more boxes", justify = LEFT).grid(row = 1 , column = 0)
 
 
-        Label(self.edit_wind, text = "Name").grid(row = 2, column = 0, sticky = W)
-        Name = Entry(self.edit_wind)
-        Name.grid(row = 2, column = 1)
-        Label(self.edit_wind, text = "Lasta").grid(row = 3, column = 0, sticky = W)
-        Lasta = Entry(self.edit_wind)
-        Lasta.grid(row = 3, column = 1)
-        Label(self.edit_wind, text = "address").grid(row = 4, column = 0, sticky = W)
-        address = Entry(self.edit_wind)
-        address.grid(row = 4, column = 1)
-        Label(self.edit_wind, text = "phone").grid(row = 5, column = 0, sticky = W)
-        phone = Entry(self.edit_wind)
-        phone.grid(row = 5, column = 1)
-        Label(self.edit_wind, text = "email").grid(row = 6, column = 0, sticky = W)
-        email = Entry(self.edit_wind)
-        email.grid(row = 6, column = 1)
-        Label(self.edit_wind, text = "").grid(row = 7, column = 0, sticky = W)
+        Label(self.edit_wind, text = "product").grid(row = 2, column = 0, sticky = W)
+        product = Entry(self.edit_wind)
+        product.grid(row = 2, column = 1)
+        Label(self.edit_wind, text = "description").grid(row = 3, column = 0, sticky = W)
+        description = Entry(self.edit_wind)
+        description.grid(row = 3, column = 1)
+        Label(self.edit_wind, text = "price").grid(row = 4, column = 0, sticky = W)
+        price = Entry(self.edit_wind)
+        price.grid(row = 4, column = 1)
+        Label(self.edit_wind, text = "in_stock").grid(row = 5, column = 0, sticky = W)
+        in_stock = Entry(self.edit_wind)
+        in_stock.grid(row = 5, column = 1)
+        Label(self.edit_wind, text = "").grid(row = 6, column = 0, sticky = W)
 
-        Button(self.edit_wind, text = 'Search match', command = lambda: self.search_match_pet(Name.get(), Lasta.get(), address.get(), phone.get(), email.get())).grid(row = 7, column = 2, sticky = W)
+        Button(self.edit_wind, text = 'Search match', command = lambda: self.search_match_stock(product.get(), description.get(), price.get(), in_stock.get())).grid(row = 6, column = 2, sticky = W)
         self.edit_wind.mainloop()
 
-    def search_match_pet(self,Name, Lasta, address, phone, email):
+    def search_match_stock(self,product, description, price, in_stock):
         #print("102",product)
-        column_list=['Name', 'Lasta', 'address', 'phone', 'email']
-        search =["", "", "", "", ""]
-        search[0] = Name
-        search[1] = Lasta
-        search[2] = address
-        search[3] = phone
-        search[4] = email
-        stringt="SELECT * FROM pet_owner WHERE "
+        column_list=['product', 'description', 'price', 'in_stock']
+        search =["", "", "", ""]
+        search[0] = product
+        search[1] = description
+        search[2] = price
+        search[3] = in_stock
+        stringt="SELECT * FROM stock WHERE "
         #print("114",str(len(stringt)))
         count_=0
         sum_=0
@@ -146,8 +132,8 @@ class pets:
             count_+=1
         list_text = stringt.split(' ')
         if (len(str(list_text[-1]))==0):
-            if(len(stringt)==30):
-                stringt='SELECT * FROM pet_owner'
+            if(len(stringt)==26):
+                stringt='SELECT * FROM stock'
             else:
                 stringt=stringt[:-len(' AND')]
 
@@ -185,22 +171,22 @@ class pets:
         self.updtcblist()
 
 
-    def open_record_new_pet_owner(self):
-        os.system ("python3 dbpet_owner.py")
+    def open_record_new_stock(self):
+        os.system ("python3 dbstock.py")
 
     def updtcblist(self):
         ## change clients
-        list_=self.get_pet_owners_listed()
-        self.id_pet_owner['values'] = list_
+        list_=self.get_stocks_listed()
+        self.id_stock['values'] = list_
 
-    def get_pet_owners_listed(self):
+    def get_stocks_listed(self):
         # getting data
-        query = 'SELECT * FROM pet_owner ORDER BY id_pet_owner ASC'
+        query = 'SELECT * FROM stock ORDER BY id_stock ASC'
         db_rows = self.run_query(query)
         # filling data list
         list_=[]
         for row in db_rows:
-            text_=str(row[0])+":"+str(row[1])+"  "+str(row[2])+"  "+str(row[5])
+            text_=str(row[0])+": "+str(row[1])+"  "+str(row[2])+"  "+str(row[3])+"  "+str(row[4])
             list_.append(text_)
         return list_
 
@@ -212,38 +198,36 @@ class pets:
             conn.commit()
         return result
 
-    # Get pets from Database
-    def get_petss(self):
+    # Get car from Database
+    def get_cars(self):
         # cleaning Table
         records = self.tree.get_children()
         for element in records:
             self.tree.delete(element)
         # getting data
-        query = 'SELECT * FROM pets ORDER BY id_pets DESC'
+        query = 'SELECT * FROM car ORDER BY id_car DESC'
         db_rows = self.run_query(query)
         # filling data
         for row in db_rows:
-            self.tree.insert('',0,  text = row[0], values = (row[1],row[2],row[3],row[4]))
+            self.tree.insert('',0,  text = row[0], values = (row[1],row[2]))
 
     # User Input Validation
     def validation(self):
-        return len(self.pet_name.get()) != 0 and len(self.breed.get()) != 0 and len(self.kind_of_animal.get()) != 0 and len(self.id_pet_owner.get()) != 0
+        return len(self.Name_client.get()) != 0 and len(self.id_stock.get()) != 0
 
-    def add_pets(self):
+    def add_car(self):
         if self.validation():
-            query = 'INSERT INTO pets VALUES(NULL, ?, ?, ?, ?)'
-            parameters =  (self.pet_name.get(), self.breed.get(), self.kind_of_animal.get(), (self.id_pet_owner.get().split(':'))[0])
+            query = 'INSERT INTO car VALUES(NULL, ?, ?)'
+            parameters =  (self.Name_client.get(), (self.id_stock.get().split(':'))[0])
             self.run_query(query, parameters)
-            self.message['text'] = 'pets {} added Successfully'.format(self.pet_name.get())
-            self.pet_name.delete(0, END)
-            self.breed.delete(0, END)
-            self.kind_of_animal.delete(0, END)
-            self.id_pet_owner.delete(0, END)
+            self.message['text'] = 'car {} added Successfully'.format(self.Name_client.get())
+            self.Name_client.delete(0, END)
+            self.id_stock.delete(0, END)
         else:
-            self.message['text'] = 'pet_name and breed and kind_of_animal and id_pet_owner is Required'
-        self.get_petss()
+            self.message['text'] = 'Name_client and id_stock is Required'
+        self.get_cars()
 
-    def delete_pets(self):
+    def delete_car(self):
         self.message['text'] = ''
         try:
             self.tree.item(self.tree.selection())['text']
@@ -253,65 +237,49 @@ class pets:
         self.message['text'] = ''
         ##
         name = self.tree.item(self.tree.selection())['text']
-        query = 'DELETE FROM pets WHERE id_pets = ?'
+        query = 'DELETE FROM car WHERE id_car = ?'
         self.run_query(query, (name, ))
         self.message['text'] = 'Record {} deleted Successfully'.format(name)
-        self.get_petss()
+        self.get_cars()
 
-    def edit_pets(self):
+    def edit_car(self):
         self.message['text'] = ''
         try:
             self.tree.item(self.tree.selection())['values'][0]
         except IndexError as e:
             self.message['text'] = 'Please, select Record in the Grid'
             return
-        old_pet_name = self.tree.item(self.tree.selection())['values'][0]
-        old_breed = self.tree.item(self.tree.selection())['values'][1]
-        old_kind_of_animal = self.tree.item(self.tree.selection())['values'][2]
-        old_id_pet_owner = self.tree.item(self.tree.selection())['values'][3]
+        old_Name_client = self.tree.item(self.tree.selection())['values'][0]
+        old_id_stock = self.tree.item(self.tree.selection())['values'][1]
         self.edit_wind = Toplevel()
-        self.edit_wind.title = 'Edit pets'
-        # Old pet_name
-        Label(self.edit_wind, text = 'Old pet_name:').grid(row = 0, column = 1)
-        Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = old_pet_name), state = 'readonly').grid(row = 0, column = 2)
-        # New pet_name
-        Label(self.edit_wind, text = 'New pet_name:').grid(row = 1, column = 1)
-        new_pet_name = Entry(self.edit_wind)
-        new_pet_name.grid(row = 1, column = 2)
-        # Old breed
-        Label(self.edit_wind, text = 'Old breed:').grid(row = 2, column = 1)
-        Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = old_breed), state = 'readonly').grid(row = 2, column = 2)
-        # New breed
-        Label(self.edit_wind, text = 'New breed:').grid(row = 3, column = 1)
-        new_breed = Entry(self.edit_wind)
-        new_breed.grid(row = 3, column = 2)
-        # Old kind_of_animal
-        Label(self.edit_wind, text = 'Old kind_of_animal:').grid(row = 4, column = 1)
-        Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = old_kind_of_animal), state = 'readonly').grid(row = 4, column = 2)
-        # New kind_of_animal
-        Label(self.edit_wind, text = 'New kind_of_animal:').grid(row = 5, column = 1)
-        new_kind_of_animal = Entry(self.edit_wind)
-        new_kind_of_animal.grid(row = 5, column = 2)
-        # Old id_pet_owner
-        Label(self.edit_wind, text = 'Old id_pet_owner:').grid(row = 6, column = 1)
-        Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = old_id_pet_owner), state = 'readonly').grid(row = 6, column = 2)
-        # New id_pet_owner
-        Label(self.edit_wind, text = 'New id_pet_owner:').grid(row = 7, column = 1)
-        new_id_pet_owner = Entry(self.edit_wind)
-        new_id_pet_owner.grid(row = 7, column = 2)
+        self.edit_wind.title = 'Edit car'
+        # Old Name_client
+        Label(self.edit_wind, text = 'Old Name_client:').grid(row = 0, column = 1)
+        Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = old_Name_client), state = 'readonly').grid(row = 0, column = 2)
+        # New Name_client
+        Label(self.edit_wind, text = 'New Name_client:').grid(row = 1, column = 1)
+        new_Name_client = Entry(self.edit_wind)
+        new_Name_client.grid(row = 1, column = 2)
+        # Old id_stock
+        Label(self.edit_wind, text = 'Old id_stock:').grid(row = 2, column = 1)
+        Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = old_id_stock), state = 'readonly').grid(row = 2, column = 2)
+        # New id_stock
+        Label(self.edit_wind, text = 'New id_stock:').grid(row = 3, column = 1)
+        new_id_stock = Entry(self.edit_wind)
+        new_id_stock.grid(row = 3, column = 2)
         
-        Button(self.edit_wind, text = 'Update', command = lambda: self.edit_records(new_pet_name.get(), old_pet_name, new_breed.get(), old_breed, new_kind_of_animal.get(), old_kind_of_animal, new_id_pet_owner.get(), old_id_pet_owner)).grid(row = 8, column = 2, sticky = W)
+        Button(self.edit_wind, text = 'Update', command = lambda: self.edit_records(new_Name_client.get(), old_Name_client, new_id_stock.get(), old_id_stock)).grid(row = 4, column = 2, sticky = W)
         self.edit_wind.mainloop()
 
-    def edit_records(self, new_pet_name, old_pet_name, new_breed, old_breed, new_kind_of_animal, old_kind_of_animal, new_id_pet_owner, old_id_pet_owner):
-        query = 'UPDATE pets SET pet_name = ?, breed = ?, kind_of_animal = ?, id_pet_owner = ? WHERE pet_name = ? AND breed = ? AND kind_of_animal = ? AND id_pet_owner = ?'
-        parameters = (new_pet_name, new_breed, new_kind_of_animal, new_id_pet_owner, old_pet_name, old_breed, old_kind_of_animal, old_id_pet_owner)
+    def edit_records(self, new_Name_client, old_Name_client, new_id_stock, old_id_stock):
+        query = 'UPDATE car SET Name_client = ?, id_stock = ? WHERE Name_client = ? AND id_stock = ?'
+        parameters = (new_Name_client, new_id_stock, old_Name_client, old_id_stock)
         self.run_query(query, parameters)
         self.edit_wind.destroy()
-        self.message['text'] = 'Record {} updated successfylly'.format(old_pet_name)
-        self.get_petss()
+        self.message['text'] = 'Record {} updated successfylly'.format(old_Name_client)
+        self.get_cars()
 
 if __name__ == '__main__':
     window = Tk()
-    application = pets(window)
+    application = car(window)
     window.mainloop()
