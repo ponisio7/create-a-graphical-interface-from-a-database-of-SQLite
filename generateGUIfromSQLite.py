@@ -79,13 +79,13 @@ class Product:
             contain_two_ids=True
         
         
-        stringpy+= "from tkinter import ttk\nfrom tkinter import *\nimport sqlite3\nimport os\n"
+        stringpy+= "from tkinter import ttk\nfrom tkinter import *\nimport sqlite3\nimport os\nfrom PIL import Image, ImageTk\n"
         stringpy+="\nclass "+thetables+":\n\n    # connection dir property\n    db_name = \'"+ '{}'.format(db_name)+"\' \n\n"
         stringpy+="    def __init__(self, window):\n        # Initializations\n        self.wind = window\n        "
         stringpy+="##'.format(thetables)\n        self.wind.title(\'" + '{}'.format(thetables)+"\') \n\n        "
         stringpy+="# Creating a Frame Container\n        ##'.format(thetables)\n        "
         stringpy+="frame = LabelFrame(self.wind, text = \'Register new "+ '{}'.format(thetables)+"\')\n        "
-        stringpy+="frame.grid(row = 0, column = 0, columnspan = 3, pady = 20, sticky = 'ew')"
+        stringpy+="frame.grid(row = 0, column = 0, columnspan = 4, pady = 10, sticky = 'ew')"
         stringpy+="\n\n        #focus\n        frame.bind(\"<FocusIn>\", self.on_focus_in)"
         stringpy+="\n        frame.bind(\"<FocusOut>\", self.on_focus_out)"
         stringpy+="\n\n        ## Input :)\n        "
@@ -115,7 +115,10 @@ class Product:
             stringpy+="\n        ttk.Button(frame, text = 'Record new "+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+"\'"   
             stringpy+=", command = self.open_record_new_"+ '{}'.format(name_id.replace((name_id.split('_')[0]+'_'),""))+").grid(row = "
             print("117",name_id)
-            stringpy+=""+ '{}'.format(str(count_row-1)) + ", column=2, columnspan = 2, sticky = W + E)"
+            stringpy+=""+ '{}'.format(str(count_row-1)) + ", column=3)"
+            stringpy+="\n        # find-148857_640.png\n        buttonImage = Image.open(\'find-148857_640.png\')\n        buttonImage = buttonImage.resize((15, 15), Image.ANTIALIAS)"
+            stringpy+="\n        buttonPhoto = ImageTk.PhotoImage(buttonImage)"
+            stringpy+="\n        self.btn_"+name_id
         stringpy+="\n        ttk.Button(frame, text = 'Save "+ '{}'.format(thetables)+"\'"   
         stringpy+=", command = self.add_"+ '{}'.format(thetables)+").grid(row = " + '{}'.format(str(count_row)) + ", columnspan = 2, sticky = W + E)"
         stringpy+="\n\n        # Output Messages \n        self.message = Label(text = '', fg = 'red')\n        "

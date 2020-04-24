@@ -2,6 +2,7 @@ from tkinter import ttk
 from tkinter import *
 import sqlite3
 import os
+from PIL import Image, ImageTk
 
 class stock:
 
@@ -17,7 +18,7 @@ class stock:
         # Creating a Frame Container
         ##'.format(thetables)
         frame = LabelFrame(self.wind, text = 'Register new stock')
-        frame.grid(row = 0, column = 0, columnspan = 3, pady = 20, sticky = 'ew')
+        frame.grid(row = 0, column = 0, columnspan = 4, pady = 10, sticky = 'ew')
 
         #focus
         frame.bind("<FocusIn>", self.on_focus_in)
