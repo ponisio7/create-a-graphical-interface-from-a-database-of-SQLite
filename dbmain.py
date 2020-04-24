@@ -40,6 +40,10 @@ class car:
         buttonImage = Image.open('find-148857_640.png')
         buttonImage = buttonImage.resize((15, 15), Image.ANTIALIAS)
         buttonPhoto = ImageTk.PhotoImage(buttonImage)
+        self.btn_id_stock = ttk.Button(frame, image=buttonPhoto , command = self.find_records_in_stock)
+        self.btn_id_stock.grid(column= 2, row= 2)
+        # assign image to other object
+        self.btn_id_stock.image = buttonPhoto
         ttk.Button(frame, text = 'Save car', command = self.add_car).grid(row = 3, columnspan = 2, sticky = W + E)
 
         # Output Messages 
@@ -70,6 +74,93 @@ class car:
 
         # Filling the Rows
         self.get_cars()
+
+    def find_records_in_stock(self):
+        self.message['text'] = ''
+        self.edit_wind = Toplevel()
+        self.edit_wind.title = "Find records in stock"
+        #
+        Label(self.edit_wind, text="type the word you want to search in one or more boxes", justify = LEFT).grid(row = 1 , column = 0)
+
+
+        Label(self.edit_wind, text = "product").grid(row = 2, column = 0, sticky = W)
+        product = Entry(self.edit_wind)
+        product.grid(row = 2, column = 1)
+        Label(self.edit_wind, text = "description").grid(row = 3, column = 0, sticky = W)
+        description = Entry(self.edit_wind)
+        description.grid(row = 3, column = 1)
+        Label(self.edit_wind, text = "price").grid(row = 4, column = 0, sticky = W)
+        price = Entry(self.edit_wind)
+        price.grid(row = 4, column = 1)
+        Label(self.edit_wind, text = "in_stock").grid(row = 5, column = 0, sticky = W)
+        in_stock = Entry(self.edit_wind)
+        in_stock.grid(row = 5, column = 1)
+        Label(self.edit_wind, text = "").grid(row = 6, column = 0, sticky = W)
+
+        Button(self.edit_wind, text = 'Search match', command = lambda: self.search_match_stock(product.get(), description.get(), price.get(), in_stock.get())).grid(row = 6, column = 2, sticky = W)
+        self.edit_wind.mainloop()
+
+    def search_match_stock(self,product, description, price, in_stock):
+        #print("102",product)
+        column_list=['product', 'description', 'price', 'in_stock']
+        search =["", "", "", ""]
+        search[0] = product
+        search[1] = description
+        search[2] = price
+        search[3] = in_stock
+        stringt="SELECT * FROM stock WHERE "
+        #print("114",str(len(stringt)))
+        count_=0
+        sum_=0
+        for t in range(len(search)):
+            var=str(search[t])
+            if (len(var)>0):
+                sum_+=1
+                #print("120",sum_)
+        while(count_<len(search)):
+            var=str(search[count_])
+            #print("suma",sum_)
+            if (len(var)>0):
+                if(sum_==1):
+                    stringt+= str(column_list[count_]) + " = '"+ str(search[count_]) +"'"
+                    break
+                if(count_!=sum_-1):
+                    stringt+= str(column_list[count_]) + " = '"+ str(search[count_]) + "' AND "
+                else:
+                    stringt+= str(column_list[count_]) + " = '"+ str(search[count_])  +"'"
+                    break
+            count_+=1
+        list_text = stringt.split(' ')
+        if (len(str(list_text[-1]))==0):
+            if(len(stringt)==26):
+                stringt='SELECT * FROM stock'
+            else:
+                stringt=stringt[:-len(' AND')]
+
+        # getting data
+        query = stringt.replace("\"","")
+        db_rows = self.run_query(query)
+        # filling data list
+        list_=[]
+        for row in list_:
+            list_.remove(row)
+        count_=1
+        for row in db_rows:
+            list_.append(row)
+
+        if(len(list_)==0):
+            self.edit_wind = Toplevel()
+            Label(self.edit_wind, text = "**********************************").grid(row = 1, column = 0, sticky = W)
+            Label(self.edit_wind, text = "************** no match***********").grid(row = 2, column = 0, sticky = W)
+            Label(self.edit_wind, text = "**********************************").grid(row = 3, column = 0, sticky = W)
+            return
+
+        else:
+            self.edit_wind = Toplevel()
+            for row in list_:
+                Label(self.edit_wind, text = row).grid(row = count_, column = 0, sticky = W)
+                count_+=1
+            return
 
     def on_focus_out(self, event):
         #print("I DON'T have focus")

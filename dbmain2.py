@@ -41,7 +41,7 @@ class car:
         buttonImage = buttonImage.resize((15, 15), Image.ANTIALIAS)
         buttonPhoto = ImageTk.PhotoImage(buttonImage)
         self.btn_id_stock = ttk.Button(frame, image=buttonPhoto , command = self.find_records_in_stock)
-        self.btn_id_stock.grid(column=2, row=2)
+        self.btn_id_stock.grid(column= 2, row= 2)
         # assign image to other object
         self.btn_id_stock.image = buttonPhoto
         ttk.Button(frame, text = 'Save car', command = self.add_car).grid(row = 3, columnspan = 2, sticky = W + E)
@@ -79,10 +79,10 @@ class car:
         self.message['text'] = ''
         self.edit_wind = Toplevel()
         self.edit_wind.title = "Find records in stock"
-        # 
-        Label(self.edit_wind, 
-                text="type the word you want to search in one or more boxes",
-                justify = LEFT).grid(row = 1, column = 0)
+        #
+        Label(self.edit_wind, text="type the word you want to search in one or more boxes", justify = LEFT).grid(row = 1 , column = 0)
+
+
         Label(self.edit_wind, text = "product").grid(row = 2, column = 0, sticky = W)
         product = Entry(self.edit_wind)
         product.grid(row = 2, column = 1)
@@ -96,18 +96,18 @@ class car:
         in_stock = Entry(self.edit_wind)
         in_stock.grid(row = 5, column = 1)
         Label(self.edit_wind, text = "").grid(row = 6, column = 0, sticky = W)
-        
-        Button(self.edit_wind, text = 'Search match', command = lambda: self.search_match_stock(product.get(),description.get(),price.get(),in_stock.get())).grid(row = 6, column = 2, sticky = W)
+
+        Button(self.edit_wind, text = 'Search match', command = lambda: self.search_match_stock(product.get(), description.get(), price.get(), in_stock.get())).grid(row = 6, column = 2, sticky = W)
         self.edit_wind.mainloop()
-        
-    def search_match_stock(self,product,description,price,in_stock):
+
+    def search_match_stock(self,product, description, price, in_stock):
         #print("102",product)
-        column_list=['product','description', 'price', 'in_stock']
-        search =["","","",""]
-        search[0]=product
-        search[1]=description
-        search[2]=price
-        search[3]=in_stock
+        column_list=['product', 'description', 'price', 'in_stock']
+        search =["", "", "", ""]
+        search[0] = product
+        search[1] = description
+        search[2] = price
+        search[3] = in_stock
         stringt="SELECT * FROM stock WHERE "
         #print("114",str(len(stringt)))
         count_=0
@@ -121,23 +121,18 @@ class car:
             var=str(search[count_])
             #print("suma",sum_)
             if (len(var)>0):
-                #print("125",count_,str(column_list[count_]),str(search[count_]),len(var))
                 if(sum_==1):
-                    stringt+= str(column_list[count_]) + " = \'"+ str(search[count_]) +'\''
-                    #print("128",count_,str(column_list[count_]),str(search[count_]),len(var))
+                    stringt+= str(column_list[count_]) + " = '"+ str(search[count_]) +"'"
                     break
                 if(count_!=sum_-1):
-                    stringt+= str(column_list[count_]) + " = \'"+ str(search[count_]) + "\' AND "
-                    #print("132",count_,str(column_list[count_]),str(search[count_]))
+                    stringt+= str(column_list[count_]) + " = '"+ str(search[count_]) + "' AND "
                 else:
-                    stringt+= str(column_list[count_]) + " = \'"+ str(search[count_])  + '\''
-                    #print("135",count_,str(column_list[count_]),str(search[count_]),len(var))
-                    break   
+                    stringt+= str(column_list[count_]) + " = '"+ str(search[count_])  +"'"
+                    break
             count_+=1
         list_text = stringt.split(' ')
         if (len(str(list_text[-1]))==0):
-            #print("AND",stringt)
-            if(len(stringt)==27):
+            if(len(stringt)==26):
                 stringt='SELECT * FROM stock'
             else:
                 stringt=stringt[:-len(' AND')]
@@ -147,19 +142,31 @@ class car:
         db_rows = self.run_query(query)
         # filling data list
         list_=[]
-        self.edit_wind = Toplevel()
-        self.edit_wind.title = "Find records in stock"
+        for row in list_:
+            list_.remove(row)
         count_=1
         for row in db_rows:
-            text_=str(row[0])+":"+str(row[1])+"  "+str(row[2])+"  "+str(row[3])+"  "+str(row[4])
-            list_.append(text_)
-            Label(self.edit_wind, text = text_).grid(row = count_, column = 0, sticky = W)
-            count_+=1
-        count_+=1
-        Label(self.edit_wind, text = "").grid(row = count_, column = 0, sticky = W)
-        self.edit_wind.mainloop()
+            list_.append(row)
+  
+        if(len(list_)==0):
+            #print("159",list_)
+            self.edit_wind = Toplevel()
+            Label(self.edit_wind, text = "**********************************").grid(row = 1, column = 0, sticky = W)
+            Label(self.edit_wind, text = "************** no match***********").grid(row = 2, column = 0, sticky = W)
+            Label(self.edit_wind, text = "**********************************").grid(row = 3, column = 0, sticky = W)
+            return
+ 
+        else:
+            self.edit_wind = Toplevel()
+            #print("168",list_)
+            for row in list_:
+                #print("170",row)
+                Label(self.edit_wind, text = row).grid(row = count_, column = 0, sticky = W)
+                count_+=1
+            return
 
     def on_focus_out(self, event):
+
         #print("I DON'T have focus")
         pass
 

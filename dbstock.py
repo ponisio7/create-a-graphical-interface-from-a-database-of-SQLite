@@ -76,6 +76,8 @@ class stock:
         # Filling the Rows
         self.get_stocks()
 
+
+
     def on_focus_out(self, event):
         #print("I DON'T have focus")
         pass

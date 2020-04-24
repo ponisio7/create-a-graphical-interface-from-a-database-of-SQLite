@@ -118,7 +118,10 @@ class Product:
             stringpy+=""+ '{}'.format(str(count_row-1)) + ", column=3)"
             stringpy+="\n        # find-148857_640.png\n        buttonImage = Image.open(\'find-148857_640.png\')\n        buttonImage = buttonImage.resize((15, 15), Image.ANTIALIAS)"
             stringpy+="\n        buttonPhoto = ImageTk.PhotoImage(buttonImage)"
-            stringpy+="\n        self.btn_"+name_id
+            stringpy+="\n        self.btn_"+name_id+" = ttk.Button(frame, image=buttonPhoto , command = self.find_records_in_stock)"
+            stringpy+="\n        self.btn_"+name_id+".grid(column= 2, row= "+str(count_row-1)+")"
+            stringpy+="\n        # assign image to other object\n        self.btn_"
+            stringpy+=name_id+".image = buttonPhoto"
         stringpy+="\n        ttk.Button(frame, text = 'Save "+ '{}'.format(thetables)+"\'"   
         stringpy+=", command = self.add_"+ '{}'.format(thetables)+").grid(row = " + '{}'.format(str(count_row)) + ", columnspan = 2, sticky = W + E)"
         stringpy+="\n\n        # Output Messages \n        self.message = Label(text = '', fg = 'red')\n        "
@@ -148,7 +151,109 @@ class Product:
         stringpy+="ttk.Button(text = 'DELETE', command = self.delete_"+ '{}'.format(thetables)+").grid(row = "+'{}'.format(str(count_row))+", column = 0, sticky = W+E, columnspan = 1)"
         stringpy+="\n        ttk.Button(text = 'EDIT', command = self.edit_"+ '{}'.format(thetables)+").grid(row = "+'{}'.format(str(count_row))+", column = 1, sticky = W+E,  columnspan = 2)"
         stringpy+="\n\n        # Filling the Rows\n        self.get_"+ '{}'.format(thetables)+"s()\n\n"
-        stringpy+="    def on_focus_out(self, event):\n        #print(\"I DON\'T have focus\")\n        pass\n\n"
+        if (re.match('id_', a, re.IGNORECASE)!=None):
+            stringpy+="    def find_records_in_"+name_id.split('_')[1]+"(self):\n        self.message[\'text\'] = \'\'\n        "
+            stringpy+="self.edit_wind = Toplevel()\n        self.edit_wind.title = \"Find records in stock\"\n        "
+            stringpy+="#\n        Label(self.edit_wind, text=\"type the word you want to search in one or more boxes\", justify = LEFT).grid(row = "
+            stringpy+="1 , column = 0)\n\n"
+            connection = sqlite3.connect(db_name)
+            cursor = connection.execute('SELECT * FROM '+name_id.split('_')[1])
+            names = [description[0] for description in cursor.description]
+            count_=1
+            for each in names:
+                if(count_>1):
+                    stringpy+="\n        Label(self.edit_wind, text = \""
+                    stringpy+=each + "\").grid(row = "+str(count_)+", column = 0, sticky = W)"
+                    stringpy+="\n        " + each + " = Entry(self.edit_wind)"
+                    stringpy+="\n        " + each + ".grid(row = " + str(count_) + ", column = 1)"
+                count_+=1
+
+            stringpy+="\n        Label(self.edit_wind, text = \"\").grid(row = " + str(count_) + ", column = 0, sticky = W)"
+            stringpy+="\n\n        Button(self.edit_wind, text = 'Search match', command = lambda: self.search_match_"
+            stringpy+=name_id.split('_')[1]+"("
+            count_=1
+            for each in names:
+                if(count_>1 and count_<len(names)):
+                    stringpy+=each+".get(), "
+                else:
+                    if(count_>1):
+                        stringpy+=each+".get())).grid(row = " +  str(count_+1)+", column = 2, sticky = W)"
+
+                count_+=1
+
+            stringpy+="\n        self.edit_wind.mainloop()"
+
+            stringpy+="\n\n    def search_match_"+name_id.split('_')[1]+"(self,"
+            ##
+            count_=1
+            for each in names:
+                if(count_>1 and count_<len(names)):
+                    stringpy+=each+", "
+                else:
+                    if(count_>1):
+                        stringpy+=each+"):\n        #print(\"102\",product)\n        column_list=["
+
+                count_+=1
+
+            count_=1
+            for each in names:
+                if(count_>1 and count_<len(names)):
+                    stringpy+="\'"+each+"\', "
+                else:
+                    if(count_>1):
+                        stringpy+="\'"+each+"\']\n        search =["
+
+                count_+=1
+
+            count_=1
+            for each in names:
+                if(count_>1 and count_<len(names)):
+                    stringpy+= "\"\", "
+                else:
+                    if(count_>1):
+                        stringpy+= "\"\"]"
+                count_+=1
+
+            count_=0
+            for each in names:
+                if(count_>0 ):
+                    stringpy+= "\n        search["+str(count_-1)+"] = " + each
+
+                count_+=1
+
+            stringpy+= "\n        stringt=\"SELECT * FROM "+name_id.split('_')[1]+" WHERE \""
+            stringpy+= "\n        #print(\"114\",str(len(stringt)))\n        count_=0\n        sum_=0"
+            stringpy+= "\n        for t in range(len(search)):\n            var=str(search[t])"
+            stringpy+= "\n            if (len(var)>0):\n                sum_+=1\n                "
+            stringpy+= "#print(\"120\",sum_)\n        while(count_<len(search)):"
+            stringpy+= "\n            var=str(search[count_])\n            #print(\"suma\",sum_)"
+            stringpy+= "\n            if (len(var)>0):\n                if(sum_==1):"
+            stringpy+= "\n                    stringt+= str(column_list[count_]) + \" = \'\"+ str(search[count_]) +\"\'\""
+            stringpy+= "\n                    break\n                if(count_!=sum_-1):\n                    "
+            stringpy+= "stringt+= str(column_list[count_]) + \" = \'\"+ str(search[count_]) + \"\' AND \"\n                "
+            stringpy+= "else:\n                    stringt+= str(column_list[count_]) + \" = \'\"+ str(search[count_])  +\"\'\""
+            stringpy+= "\n                    break\n            count_+=1\n        "
+            stringpy+= "list_text = stringt.split(' ')\n        if (len(str(list_text[-1]))==0):"
+            stringpy+= "\n            if(len(stringt)=="
+            query2 = 'SELECT * FROM '+name_id.split('_')[1]+ " WHERE "
+            stringpy+= str(len(query2))
+            stringpy+= "):\n                stringt=\'SELECT * FROM "+name_id.split('_')[1]+"\'"
+            stringpy+= "\n            else:\n                stringt=stringt[:-len(\' AND\')]"
+            stringpy+= "\n\n        # getting data\n        query = stringt.replace(\"\\\"\",\"\")"
+            stringpy+= "\n        db_rows = self.run_query(query)\n        # filling data list"
+            stringpy+= "\n        list_=[]\n        for row in list_:\n            list_.remove(row)"
+            stringpy+= "\n        count_=1\n        for row in db_rows:\n            list_.append(row)"
+            stringpy+= "\n\n        if(len(list_)==0):\n            self.edit_wind = Toplevel()\n            "
+            stringpy+= "Label(self.edit_wind, text = \"**********************************\").grid(row = 1, column = 0, sticky = W)\n            "
+            stringpy+= "Label(self.edit_wind, text = \"************** no match***********\").grid(row = 2, column = 0, sticky = W)\n            "
+            stringpy+= "Label(self.edit_wind, text = \"**********************************\").grid(row = 3, column = 0, sticky = W)\n            "
+            stringpy+= "return\n\n        else:\n            self.edit_wind = Toplevel()\n            "
+            stringpy+= "for row in list_:\n                Label(self.edit_wind, text = row).grid(row = count_, column = 0, sticky = W)\n            "
+            stringpy+= "    count_+=1\n            return"
+            count_=0
+           
+        ##
+        stringpy+="\n\n    def on_focus_out(self, event):\n        #print(\"I DON\'T have focus\")\n        pass\n\n"
         stringpy+="    def on_focus_in(self, event):\n        #print(\"I have focus\")"
         if (re.match('id_', a, re.IGNORECASE)!=None):
             stringpy+="\n        self.updtcblist()\n\n"
